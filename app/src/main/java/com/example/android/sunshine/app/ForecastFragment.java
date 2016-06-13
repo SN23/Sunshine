@@ -80,12 +80,12 @@ public  class ForecastFragment extends Fragment {
         return rootView;
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
+    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -177,6 +177,13 @@ public  class ForecastFragment extends Fragment {
                     }
                 }
             }
+            try {
+                return getWeatherDataFromJson(forecastJsonStr, numDays);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             return null;
         }
 
