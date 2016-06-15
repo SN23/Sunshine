@@ -12,8 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +32,7 @@ import java.util.ArrayList;
  * Created by Sukhjinder on 3/22/16.
  */
 
-public  class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment {
 
     private ArrayAdapter<String> mForecastAdapter;
     public ForecastFragment() {
@@ -64,7 +66,7 @@ public  class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        ArrayList<String> forecast = new ArrayList<>();
+        final ArrayList<String> forecast = new ArrayList<>();
         forecast.add("Today - Sunny - 88/63");
         forecast.add("Tomorrow - Foggy - 70/46 ");
         forecast.add("Weds - Cloudy - 72/63");
@@ -76,6 +78,13 @@ public  class ForecastFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String weatherForecast = mForecastAdapter.getItem(i);
+                Toast.makeText(getActivity(),weatherForecast, Toast.LENGTH_LONG).show();
+            }
+        });
 
         return rootView;
     }
@@ -280,13 +289,20 @@ public  class ForecastFragment extends Fragment {
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
-            for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
-            }
             return resultStrs;
+        }
 
+        @Override
+        protected void onPostExecute(String[] strings) {
+            super.onPostExecute(strings);
+//          null check
+            if(strings!=null){
+                mForecastAdapter.clear();
+            }
+            for(String s : strings)
+            {
+                mForecastAdapter.add(s);
+            }
         }
     }
-
-
 }
