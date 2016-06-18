@@ -16,9 +16,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +59,9 @@ public class ForecastFragment extends Fragment {
         if (id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("11432");
+            return true;
+        }
+        if(id == R.id.action_settings){
             return true;
         }
         return super.onOptionsItemSelected(item);
