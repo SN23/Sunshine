@@ -1,9 +1,11 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -16,11 +18,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +58,10 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("11432");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+            weatherTask.execute(location);
             return true;
         }
         if(id == R.id.action_settings){
@@ -72,12 +75,6 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final ArrayList<String> forecast = new ArrayList<>();
-        forecast.add("Today - Sunny - 88/63");
-        forecast.add("Tomorrow - Foggy - 70/46 ");
-        forecast.add("Weds - Cloudy - 72/63");
-        forecast.add("Thurs - Rainy - 64/51");
-        forecast.add("Fri - Foggy - 70/46");
-        forecast.add("Sat - Sunny - 76/68");
 
         mForecastAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecast);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -96,6 +93,21 @@ public class ForecastFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+
+    private void updateWeather() {
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        weatherTask.execute(location);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
